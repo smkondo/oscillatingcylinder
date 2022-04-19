@@ -104,13 +104,10 @@ X2 = v_matrix(:,2:nt);
 
 % Compute DMD using "reduced order matrices" (only use r modes)
 % Phi are evecs of A
-r = 9;
+r = 7;
 Ured = U(:,1:r);
 Sred = S(1:r,1:r);
 Vred = V(1:nt-1,1:r);
-% Ured = U;
-% Sred = S;
-% Vred = V;
 
 % Build the best-fit linear model that shows how POD modes evolve in time
 Atilde = Ured'*X2*Vred/Sred;  % project A onto U bases vectors
@@ -134,8 +131,8 @@ title('lambda imag')
 %% 
 figure(3)
 title("Contour Plot of First Eigenflow of Reduced Operator");
-velmagPhi1 = real(sqrt(Phi(1:nx*ny, 2).^2+Phi(nx*ny+1:2*nx*ny,2).^2));
-contourf(XX, YY, reshape(velmagPhi1, [nx, ny]),'edgecolor','none')
+velmagPhi1 = real(sqrt(Phi(1:nx*ny, 2).^2+Phi(nx*ny+1:2*nx*ny,).^2));
+contourf(XX, YY, reshape(velmagPhi1, [nx, ny]))
 title('third DMD mode')
 axis([-2.5 17.5 -3 3])
 daspect([1 1 1])
