@@ -44,6 +44,15 @@ end
 contourf(XX,YY,reshape(v_matrix(1:nx*ny,50),[nx,ny]))
 axis([-2.5 17.5 -3 3])
 daspect([1 1 1])
+
+%% 
+% Subtract temporal mean from data matrix
+vx_mean = mean(v_matrix(1:nx*ny,:), 2);
+vy_mean = mean(v_matrix(nx*ny+1:2*nx*ny,:), 2);
+v_mean = [vx_mean; vy_mean];
+
+v_matrix_fluc = v_matrix - v_mean;
+
 %% Write animation video
 video = VideoWriter('uvel3.avi');
 video.FrameRate = 10; %set frames per second
@@ -61,6 +70,8 @@ end
 
 close(video)
 
+%% SVD - write singular values to a text file
+[U,S,V] = svds(v_matrix_fluc,20);
 
 %% DMD analysis
 X = v_matrix(:,1:nt-1);
