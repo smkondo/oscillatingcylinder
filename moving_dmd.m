@@ -2,16 +2,23 @@
 % This script does DMD analysis on an oscillating cylinder
 
 %% Read in the CFD data
-fn_string_format = 'movingvelocity/FFF-0';
-start_int = 100;
-nt = 100; % Number of time steps
-total_time = 1;   % sec, totaltime duration of experiment
+
+dt = 0.005; % Time steps (s)
+nt = 100;  % number of time steps
+total_time = 0.5;   % sec, totaltime duration of experiment
 xmin = -10; xmax = 25; ymin = -15; ymax = 15; 
 nx = 500; ny = 500;
 x = linspace(xmin,xmax,nx);
 y = linspace(ymin,ymax,ny);
+t = linspace(0, total_time, nt);
 
-[XX, YY, v_matrix] = readData(x, y, nt, fn_string_format, start_int);
+% Relevant information for reading the oscillating cylinder data
+moving_1_args = {x, y, t, "movingfield1/FFF-Setup-Output-0", 200};
+moving_1p5_args = {x, y, t, "movingfield3/FFF-Setup-Output-0", 141};
+moving_p5_args = {x, y, t, "movingfield3/FFF-Setup-Output-0", 165};
+
+% [XX, YY, v_matrix] = readData(x, y, nt, 'movingvelocity/FFF-0', 100);
+[XX, YY, v_matrix] = readData(moving_1_args);
 
 % Subtract temporal mean from data matrix (for POD analysis)
 vx_mean = mean(v_matrix(1:nx*ny,:), 2);
@@ -24,6 +31,7 @@ v_matrix_fluc = v_matrix - v_mean;
 contourf(XX,YY,reshape(v_matrix(1:nx*ny,50),[nx,ny]))
 axis([-2.5 17.5 -3 3])
 daspect([1 1 1])
+colorbar()
 
 %% Write animation video
 video = VideoWriter('uvel3.avi');

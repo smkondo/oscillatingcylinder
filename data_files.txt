@@ -1,4 +1,0 @@
-This document contains description of the various files in the repository (if necessary)
-
-movingfield1: Oscillating ccylinder for frequencry ratio 1.
-velocityfield4: Stationary cylinder flow with dt = 0.01

@@ -8,13 +8,17 @@
 fn_string_format = "velocityfield3/FFF-1-00450-0";
 start_int = 200;
 nt = 100; % Number of time steps
-total_time = 1;   % sec, totaltime duration of experiment
+dt = 0.005;  % Time-step
+total_time = 0.5;   % sec, totaltime duration of experiment
+t = linspace(0, total_time, nt);
 xmin = -10; xmax = 25; ymin = -15; ymax = 15; 
 nx = 500; ny = 500;
 x = linspace(xmin,xmax,nx);
 y = linspace(ymin,ymax,ny);
 
-[XX, YY, v_matrix] = readData(x, y, nt, fn_string_format, start_int);
+stationary_arg_list = {x, y, t, fn_string_format, start_int};
+
+[XX, YY, v_matrix] = readData(stationary_arg_list);
 
 % Subtract temporal mean from data matrix (for POD analysis)
 vx_mean = mean(v_matrix(1:nx*ny,:), 2);
@@ -67,8 +71,8 @@ disp(f0)
 
 figure(2)
 plot(real(diag(lambda)), imag(diag(lambda)), "o")
-xlabel("Re(\lambda_j)", "Interpreter", "latex")
-ylabel("Im(\lambda_j)", "Interpreter", "latex")
+xlabel("Re($\lambda_j$)", "Interpreter", "latex")
+ylabel("Im($\lambda_j$)", "Interpreter", "latex")
 
 %% Write animation video
 video = VideoWriter('uvel.avi');

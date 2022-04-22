@@ -1,17 +1,19 @@
 % This is a function to read the velocity fields
 
-% Function inputs:
+% Function input: experiment_arg_list = {} contains the following 5 fields
 % x_list: xmin:xmax:nx
 % y_list: ymin:ymax:ny
-% nt: Number of time steps in data
+% t_list: timelist
 % fn_string_format: Format string of data file names before the last 3
 % digits (Ex: "velocityfield3/FFF-1-00450-0")
 % start_int: example: 400, if the first data file name ends with "451"
 
 
-function [XX, YY, v_matrix] = readData(x_list, y_list, nt, fn_string_format, start_int)
+function [XX, YY, v_matrix] = readData(experiment_arg_list)
+[x_list, y_list, t_list, fn_string_format, start_int] = experiment_arg_list{:};
 nx = length(x_list);
 ny = length(y_list);
+nt = length(t_list);
 v_matrix = zeros(2*nx*ny, nt);
 
 %create a mesh
