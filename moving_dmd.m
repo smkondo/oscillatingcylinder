@@ -1,57 +1,29 @@
+% Authors: Nathaniel Ruhl and Shinya Kondo
+% This script does DMD analysis on an oscillating cylinder
 
-
-%% 
-% fn = append('movingvelocity/FFF-',int2str(101));
-% Create new meshgrids
-nx = 500; ny = 500; % number of discrete points
-
-nt = 100;
-
-v_matrix = zeros(2*nx*ny, nt);
-
+%% Read in the CFD data
+fn_string_format = 'movingvelocity/FFF-0';
+start_int = 100;
+nt = 100; % Number of time steps
+total_time = 1;   % sec, totaltime duration of experiment
 xmin = -10; xmax = 25; ymin = -15; ymax = 15; 
+nx = 500; ny = 500;
 x = linspace(xmin,xmax,nx);
 y = linspace(ymin,ymax,ny);
 
-%create a mesh
-[XX,YY] = meshgrid(x,y);
+[XX, YY, v_matrix] = readData(x, y, nt, fn_string_format, start_int);
 
-for i = 1:nt
-    data = readmatrix(append('movingvelocity/FFF-0',int2str(100+i)));
-    x_data = data(:,2); 
-    y_data = data(:,3); 
-    vx_data = data(:,4);
-    vy_data = data(:,5);
-    
-    % Create interpolating function
-    vx_func = scatteredInterpolant(x_data, y_data, vx_data);
-    vy_func = scatteredInterpolant(x_data, y_data, vy_data);
-    
-    % Apply interpolating function to the meshgrid
-    vx = vx_func(XX, YY);
-    vy = vy_func(XX, YY);
-    
-    % Create data column
-    vx_col = reshape(vx, [nx*ny, 1]);
-    vy_col = reshape(vy, [nx*ny, 1]);
-    v_col = [vx_col; vy_col];
-    
-    v_matrix(:, i) = v_col;
-end
-
-
-%% 
-contourf(XX,YY,reshape(v_matrix(1:nx*ny,50),[nx,ny]))
-axis([-2.5 17.5 -3 3])
-daspect([1 1 1])
-
-%% 
-% Subtract temporal mean from data matrix
+% Subtract temporal mean from data matrix (for POD analysis)
 vx_mean = mean(v_matrix(1:nx*ny,:), 2);
 vy_mean = mean(v_matrix(nx*ny+1:2*nx*ny,:), 2);
 v_mean = [vx_mean; vy_mean];
 
 v_matrix_fluc = v_matrix - v_mean;
+
+%% Test that reading in CFD data went successfully
+contourf(XX,YY,reshape(v_matrix(1:nx*ny,50),[nx,ny]))
+axis([-2.5 17.5 -3 3])
+daspect([1 1 1])
 
 %% Write animation video
 video = VideoWriter('uvel3.avi');
@@ -70,9 +42,6 @@ end
 
 close(video)
 
-%% SVD - write singular values to a text file
-[U,S,V] = svds(v_matrix_fluc,20);
-
 %% DMD analysis
 X = v_matrix(:,1:nt-1);
 X2 = v_matrix(:,2:nt);
@@ -83,12 +52,12 @@ X2 = v_matrix(:,2:nt);
 % Compute DMD using "reduced order matrices" (only use r modes)
 % Phi are evecs of A
 r = 7;
-Ured = U(:,1:r);
-Sred = S(1:r,1:r);
-Vred = V(1:nt-1,1:r);
-% Ured = U;
-% Sred = S;
-% Vred = V;
+% Ured = U(:,1:r);
+% Sred = S(1:r,1:r);
+% Vred = V(1:nt-1,1:r);
+Ured = U;
+Sred = S;
+Vred = V;
 
 % Build the best-fit linear model that shows how POD modes evolve in time
 Atilde = Ured'*X2*Vred/Sred;  % project A onto U bases vectors
