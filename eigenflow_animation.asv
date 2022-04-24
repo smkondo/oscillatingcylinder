@@ -27,26 +27,27 @@ args4 = {"FinalData/moving3final/FFF--0", 300}; % OSCILLATING CYLINDER (R=1.5)
 
 %% Calculate non-reduced DMD
 [Phi, eval] = calcDMD(v_matrix, t);
-% lambda = diag(eval);   % 1d array
+lambda = diag(eval);   % 1d array
 
-g = diag(real(log(eval)./2./pi./dt));
+g = diag(real(log(eigs)./2./pi./dt));
 
-freq = diag(imag(log(eval)./2./pi./dt));
+freq = diag(imag(log(eigs)./2./pi./dt));
+
 % g = angle(lambda)/(2*pi*dt);   % growth rates
 % freq = log(abs(lambda))/dt;   % frequencies (Hz?)
 
 %% Make DMD eigenvalue plots
 figure(1)
-% plot(real(lambda), imag(lambda), "o")
-plot(real(eval),imag(eval),'o')
+plot(real(lambda), imag(lambda), "o")
 xlabel("$Re(\lambda)$", 'Interpreter', 'latex')
 ylabel('$Im(\lambda)$', 'Interpreter', 'latex')
-title("DMD Eigenvalues for $f_e/f_0=1$", 'Interpreter', 'latex')
+title("DMD Eigenvalues for $f_e/f_0=0.5$", 'Interpreter', 'latex')
 daspect([1 1 1])
 
 % How to plot the growth rates??
 
 %% Plot the n'th DMD eigenflow
+
 n = 4;
 % Velocity components (may be complex)
 phi_matrix_x = reshape(Phi(1:nx*ny,n), [nx, ny]);
@@ -63,6 +64,7 @@ daspect([1 1 1])
 colorbar()
 
 %% Evolve the n'th DMD mode in time
+
 n = 1;
 
 DMD_eigenmode = sqrt(real(Phi(1:nx*ny,n)).^2+real(Phi(nx*ny+1:2*nx*ny,n)).^2); 

@@ -3,24 +3,30 @@
 clc 
 close all 
 
-data = readmatrix('force3.txt');
+% Define relevant info for reading in data files
+args1 = 'FinalData/stationaryforce.txt';  % STATIONARY CYLINDER
+args2 = 'FinalData/moving1force.txt';  % OSCILLATIONG CYLINDER (frequency ratio R=0.5)
+args3 = 'FinalData/moving1force.txt';% OSCILLATING CYLINDER (R=1.0)
+args4 = 'FinalData/moving1force.txt'; % OSCILLATING CYLINDER (R=1.5)
+
+data = readmatrix(args2);
 %%
 t = data(:,2); cd = data(:,3); cl = data(:,4);
 dt = t(2)-t(1); Lt = (t(end) - t(1));
 nt = length(t);
-om = 1/Lt*[-nt/2:1:nt/2-1];
+om = 1/Lt.*[-nt/2:1:nt/2-1];
 
-% fcd = fftshift(fft(cd));
 fcl = fftshift(fft(cl));
 
-figure(2)
+figure(1)
 plot(t,cl./max(cl))
-% hold on
-% plot(t,sin(2*pi*14.4.*t))
-% hold off
+title('life coefficient vs time')
+xlabel('time')
+ylabel('C_L')
 
-%%
-plot(cl./max(cl),'o')
 %% 
-figure(3)
+figure(2)
 plot(om,abs(fcl),'o')
+title('Frequency vs Fourier coefficient magnitude')
+xlabel('Frequency')
+ylabel('magnitude')
