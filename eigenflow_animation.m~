@@ -15,7 +15,7 @@ t = linspace(0, total_time, nt);
 
 % Define relevant info for reading in data files
 args1 = {"velocityfield5/FFF-2-01500-1", 600};   % STATIONARY CYLINDER
-args2 = {"movingfield3/FFF-Setup-Output-0", 165};   % OSCILLATIONG CYLINDER (frequency ratio R=0.5)
+args2 = {"movingfield3/FFF-Setup-Output-0", 165};   % OSCILLATIONG CYLINDER (R=0.5)
 args3 = {"movingfield1/FFF-Setup-Output-0", 200}; % OSCILLATING CYLINDER (R=1.0)
 args4 = {"movingfield2/FFF-Setup-Output-0", 141}; % OSCILLATING CYLINDER (R=1.5)
 
@@ -44,7 +44,7 @@ daspect([1 1 1])
 
 %% Plot the n'th DMD eigenflow
 
-n = 4;
+n = 1;
 % Velocity components (may be complex)
 phi_matrix_x = reshape(Phi(1:nx*ny,n), [nx, ny]);
 phi_matrix_y = reshape(Phi(nx*ny+1:2*nx*ny,n), [nx, ny]);
@@ -61,14 +61,12 @@ colorbar()
 
 %% Evolve the n'th DMD mode in time
 
-n = 1;
-
-DMD_eigenmode = sqrt(real(Phi(1:nx*ny,n)).^2+real(Phi(nx*ny+1:2*nx*ny,n)).^2); 
+DMD_eigenmode = real(Phi(1:nx*ny,n)); %+real(Phi(nx*ny+1:2*nx*ny,n)).^2); 
 
 mode_evolve = zeros(nx*ny,length(t));
 
 for i = 1:length(t)
-    mode_evolve(:,i) = DMD_eigenmode.*exp(lambda(n)*t(i));
+    mode_evolve(:,i) = DMD_eigenmode.*exp(1i*freq(n)*t(i));
 end 
 
 
@@ -78,8 +76,9 @@ video = VideoWriter(append("ratio1-0_", sprintf("dmd_mode%d", n)));
 video.FrameRate = 10; % set frames per second
 open(video);
 
+
 for i = 2:length(t)
-    contourf(XX,YY,reshape(real(mode_evolve(:,i)),[nx,ny]),'edgecolor','none')
+    contourf(XX,YY,real(reshape(mode_evolve(:,i),[nx,ny])),'edgecolor','none')
     title(int2str(i))
     axis off
     frame = getframe(gcf);
