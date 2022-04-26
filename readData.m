@@ -43,5 +43,7 @@ for i = 1:nt
     v_matrix(:, i) = v_col;
 end
 
+v_matrix = v_matrix./max(v_matrix,[],'all');
+
 end
 

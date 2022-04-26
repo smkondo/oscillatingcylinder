@@ -39,4 +39,5 @@ for i = 1:nt
     om_matrix(:,i) = reshape(dvdx, [nx*ny, 1]) - reshape(dudy, [nx*ny, 1]);
 end
 
+om_matrix = om_matrix./max(om_matrix,[],'all');
 end

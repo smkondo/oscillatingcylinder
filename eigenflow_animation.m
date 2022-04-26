@@ -23,7 +23,7 @@ args4 = {"FinalData/moving3final/FFF--0", 300}; % OSCILLATING CYLINDER (R=1.5)
 % notebook
 % arg_list = {x, y, t, args2{1}, args2{2}};
 
-[XX, YY, v_matrix] = readData(x,y,t,args2{1},args2{2});
+[XX, YY, v_matrix] = readData(x,y,t,args1{1},args1{2});
 
 %% Calculate non-reduced DMD
 [Phi, eval] = calcDMD(v_matrix, t);
@@ -89,6 +89,7 @@ for i = 2:length(t)
 end
 
 close(video)
+
 
 %% Functions
 

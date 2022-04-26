@@ -28,8 +28,8 @@ args4 = {"FinalData/moving3final/FFF--0", 300}; % OSCILLATING CYLINDER (R=1.5)
 cmax = max(om_matrix(:,1));
 cmin = min(om_matrix(:,1));
 %% Write animation video
-video = VideoWriter('vorticitymoving1slow.avi');
-video.FrameRate = 2; %set frames per second
+video = VideoWriter('vorticitystationary.avi');
+video.FrameRate = 10; %set frames per second
 open(video);
 
 for i = 1:100

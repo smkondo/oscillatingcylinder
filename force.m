@@ -6,8 +6,8 @@ close all
 % Define relevant info for reading in data files
 args1 = 'FinalData/stationaryforce.txt';  % STATIONARY CYLINDER
 args2 = 'FinalData/moving1force.txt';  % OSCILLATIONG CYLINDER (frequency ratio R=0.5)
-args3 = 'FinalData/moving1force.txt';% OSCILLATING CYLINDER (R=1.0)
-args4 = 'FinalData/moving1force.txt'; % OSCILLATING CYLINDER (R=1.5)
+args3 = 'FinalData/moving2force.txt';% OSCILLATING CYLINDER (R=1.0)
+args4 = 'FinalData/moving3force.txt'; % OSCILLATING CYLINDER (R=1.5)
 
 data = readmatrix(args2);
 %%
@@ -24,9 +24,33 @@ title('life coefficient vs time')
 xlabel('time')
 ylabel('C_L')
 
+figure(3)
+plot(t,cd)
+
 %% 
 figure(2)
-plot(om,abs(fcl),'o')
+plot(om./100,abs(fcl),'o')
 title('Frequency vs Fourier coefficient magnitude')
-xlabel('Frequency')
+xlabel('St')
 ylabel('magnitude')
+xlim([-0.4 0.4])
+
+%%
+frequency1 = [0,1,1,2,2,3,3].*0.14286;
+frequency2 = [0,0.5,0.5,1,1,1.5,1.5].*0.14286;
+
+figure(1)
+plot(frequency1,'o')
+title('First 7 Dominant Frequencies')
+xlabel('mode')
+ylabel('Strouhal Number')
+
+figure(2)
+plot(frequency1,'o')
+hold on
+plot(frequency2,'o')
+hold off
+title('First 7 Dominant Frequencies')
+xlabel('mode')
+ylabel('Strouhal Number')
+legend('Stationary','f_e/f_0 = 1','Location','northwest')
