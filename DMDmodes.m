@@ -1,7 +1,7 @@
 %DMDmodes.m
-%computes the frequency and growth rates of the reduced SVD corresponding
-%to approximately 95% of the total energy content
-
+%computes the spatial DMD modes as well as the frequency and growth rates
+%of each flow past a cylinder. Also, computes the reduced order model of
+%the flow using enough modes to capture ~95% of the energy
 
 % Authors: Nathaniel Ruhl and Shinya Kondo
 % This file does dmd analysis on the flow past a stationary cylinder
@@ -19,47 +19,18 @@ t = linspace(0, total_time, nt);
 
 % Define relevant info for reading in data files
 args1 = {"FinalData/StationaryCylinderFinal/FFF-0",200};  % STATIONARY CYLINDER
-args2 = {"FinalData/moving1final/FFF--0",300};   % OSCILLATIONG CYLINDER (frequency ratio R=0.5)
-args3 = {"FinalData/moving2final/FFF--0", 300}; % OSCILLATING CYLINDER (R=1.0)
-args4 = {"FinalData/moving3final/FFF--0", 300}; % OSCILLATING CYLINDER (R=1.5)
+args2 = {"FinalData/moving1final/FFF--0",300};   % OSCILLATIONG CYLINDER (frequency ratio R=1)
+args3 = {"FinalData/moving2final/FFF--0", 300}; % OSCILLATING CYLINDER (R=1.5)
+args4 = {"FinalData/moving3final/FFF--0", 300}; % OSCILLATING CYLINDER (R=0.5)
 
-[XX, YY, v_matrix] = readData(x,y,t,args2{1},args2{2});
+[XX, YY, v_matrix] = readData(x,y,t,args4{1},args4{2});
 
 
 %% DMD analysis
 X = v_matrix(:,1:nt-1);
 X2 = v_matrix(:,2:nt);
 
-%% compute the first 20 singular values
-[~,ss,~] = svds(X,20);
-
-figure(1)
-semilogy(diag(ss)./sum(ss,'all'),'o')
-title('Largest 20 modes')
-xlabel('j')
-ylabel('\sigma_j')
-
-%remove the first mode corresponding to the mean flow
-singval = diag(ss(2:end,2:end));
-
-%compute the ratio between the sum of the first n modes to the total from
-%all 19 modes
-ratio = zeros(19,1);
-
-for i = 1:19
-    ratio(i) = sum(singval(1:i))./sum(singval);
-end
-
-figure(2)
-semilogy(diag(ss)./sum(diag(ss)),'o')
-title('first 19 singular values')
-
-figure(3)
-plot(ratio,'o')
-title('the importance of the first n modes')
-
-%%
-r = 17; %using the first 15 modes (note this may change)
+r = 17; %use the first 7 modes for stationary cylinder and 17 for oscillating case
 [Ured, Sred, Vred] = svds(X,r);
 
 % Build the best-fit linear model that shows how POD modes evolve in time
@@ -67,29 +38,22 @@ Atilde = Ured'*X2*Vred/Sred;  % project A onto U bases vectors
 [W, eigs] = eig(Atilde);  % compute e-vecs and evals of Atilde
 Phi = X2*Vred/Sred*W;  % recover full-dimensional eigenflow
 
-lambda = log(eigs)./2./pi./dt;
+lambda = log(eigs)./2./pi./dt; %real component contains the growth rate. imaginary component contains frequency
 
-%% 
-figure(4)
-plot(real(diag(lambda)),'o')
-title('lambda real')
-
-%% 
-lambda2 = flip(diag(lambda(6:13,6:13)));
-figure(5)
-plot(abs(imag(lambda2)),'o')
-% plot(abs(imag(diag(lambda))),'o')
+figure(1)
+plot(abs(imag(diag(lambda))),'o')
 title('First 7 Dominant Frequencies')
-xlabel('mode')
-ylabel('Frequency (Hz)')
-xlim([1 7])
+xlabel('mode','FontSize',14)
+ylabel('St','FontSize',14)
 
+%%
+plot(abs(imag(diag(lambda))),'o')
 %% 
-figure(5)
+figure(2)
 velmag = sqrt(reshape(Ured(1:nx*ny,4),[nx,ny]).^2 + reshape(Ured(nx*ny+1:2*nx*ny,4),[nx,ny]).^2);
 % contourf(XX, YY, reshape(real(Phi(1:nx*ny,12)) , [nx, ny]),'edgecolor','none')
 contourf(XX, YY, reshape(velmag , [nx, ny]),'edgecolor','none')
-title('Velocity Magnitude of Second DMD mode')
+title('Velocity Magnitude of Fourth DMD mode')
 axis([-2.5 17.5 -4 4])
 daspect([1 1 1])
 colorbar()
@@ -106,7 +70,6 @@ Dalpha = W\Sred*Vred(1:r,:)'/Vand;
 Dalpha = diag(diag(Dalpha));
 Dalpha2 = Dalpha./sum(Dalpha,'all');
 
-%%
 %computing the evolution by adding the first r modes
 dt = 0.005; tend = 0.5;
 t = dt:dt:tend;
@@ -121,12 +84,12 @@ for i = 1:length(t)
     mode_evolve(:,i) = evol;
 end 
 
-%% create the animation for the flow
+%% create the animation for the reduced-order model of the flow
 cmax = max(mode_evolve(1:nx*ny,1));
 cmin = min(mode_evolve(1:nx*ny,1));
-%% 
+
 %writing the animation video
-video = VideoWriter('uvel12.avi');
+video = VideoWriter('ROM.avi');
 video.FrameRate = 10; %set frames per second
 open(video);
 
@@ -146,16 +109,3 @@ for i = 1:length(t)
 end
 
 close(video)
-
-%% 
-amp = vecnorm(Phi(1:nx*ny,:),1);
-
-%%
-plotlambda = abs(diag(imag(lambda)));
-% plotlambda2 = [plotlambda(1:39);plotlambda(42:end)]./100;
-plotamp = amp;
-% plotamp = [amp(1,1:39), amp(1,42:end)];
-figure(7)
-% plot(plotlambda,plotamp./sum(plotamp),'o')
-plot(plotlambda,plotamp,'o')
-title('normalized magnitudes of modes at each frequency')
