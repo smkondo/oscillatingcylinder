@@ -10,6 +10,18 @@ This repository contains MATLAB code, animation movies, and figures that are mad
 - moving3final/: Data for frequency ratio of 0.5
 - Coefficients of drag and lift are given in the ".txt" files
 
+----------------------------------
+###### Contents of movies/:
+- stationaryfinal.avi: Streamwise velocity contour for stationary cylinder
+- moving1final.avi: Streamwise velocity contour for frequency ratio of 1
+- moving2final.avi: Streamwise velocity contour for frequency ratio of 1.5
+- moving3final.avi: Streamwise velocity contour for frequency ratio of 0.5
+- ROM.avi: Reduced-order model for the stationary cyllinder
+- ROM2.avi: Reduced-order model for frequency ratio 1
+- vorticity3.avi: Vorticity contour for frequency ratio 1.5
+- vorticitymoving1.avi and vorticitymoving1slow.avi: Vorticity contour for frequency ratio 1
+- vorticitystationary.avi: Vorticity contour for stationary cylinder
+
 
 
 
